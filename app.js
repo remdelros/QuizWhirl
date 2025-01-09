@@ -30,8 +30,7 @@ app.use((req, res, next) => {
 
 // OpenAI Configuration
 const openai = new OpenAI({
-  apiKey:
-    "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",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // PDF Storage Directory
@@ -156,7 +155,7 @@ app.post("/api/parse-pdf-text", async (req, res) => {
 });
 
 // Start Server
-app.listen(PORT () => {
+app.listen(PORT, () => {
   console.log(`Server running at port {PORT}`);
   console.log("Available Routes:");
   console.log("- POST /api/upload-pdf (upload and extract text from a PDF)");
