@@ -159,6 +159,10 @@ app.post("/api/parse-pdf-text", async (req, res) => {
   }
 });
 
+app.get("/api/hello-world", (req, res) => {
+  res.json({ message: "hello world" });
+});
+
 const server = app.listen(PORT, () => {
   console.log(`Server running at port ${PORT}`);
   server.keepAliveTimeout = 65000;
