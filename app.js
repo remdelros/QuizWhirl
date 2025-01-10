@@ -30,7 +30,8 @@ app.use(
 
 // OpenAI Configuration
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey:
+    "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",
 });
 
 // PDF Storage Directory
@@ -49,7 +50,6 @@ ensureUploadDir();
 app.timeout = 240000;
 
 app.post("/api/parse-pdf-text", async (req, res) => {
-
   req.setTimeout(240000);
 
   try {
@@ -166,7 +166,7 @@ app.get("/api/hello-world", (req, res) => {
 const server = app.listen(PORT, () => {
   console.log(`Server running at port ${PORT}`);
   server.keepAliveTimeout = 65000;
-  server.headersTimeout = 66000; 
+  server.headersTimeout = 66000;
 });
 
 module.exports = app;
