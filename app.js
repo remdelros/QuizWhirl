@@ -12,15 +12,15 @@ const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
   credentials: true,
-  origin: ["http://localhost:3000', 'http://localhost:8081"],
+  origin: ["http://localhost:3000", "http://localhost:8081"],
 };
-app.use(function (req, res, next) {
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type");
-  res.setHeader("Access-Control-Allow-Credentials", true);
-  next();
-});
+// app.use(function (req, res, next) {
+//   res.setHeader("Access-Control-Allow-Origin", "*");
+//   res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+//   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
+//   res.setHeader("Access-Control-Allow-Credentials", true);
+//   next();
+// });
 
 app.use(cors(corsOptions));
 app.options("*", cors());
