@@ -13,6 +13,8 @@ const PORT = process.env.PORT || 3000;
 const corsOptions = {
   credentials: true,
   origin: ["http://localhost:3000", "http://localhost:8081"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization"],
 };
 
 app.use(cors(corsOptions));
@@ -161,7 +163,4 @@ app.post("/api/parse-pdf-text", async (req, res) => {
 // Start Server
 app.listen(PORT, () => {
   console.log(`Server running at port {PORT}`);
-  console.log("Available Routes:");
-  console.log("- POST /api/upload-pdf (upload and extract text from a PDF)");
-  console.log("- POST /api/generate-questions (generate quiz questions)");
 });
