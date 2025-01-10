@@ -1,4 +1,4 @@
-// require("dotenv").config();
+require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
@@ -30,8 +30,7 @@ app.use(
 
 // OpenAI Configuration
 const openai = new OpenAI({
-  apiKey:
-    "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",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // PDF Storage Directory
