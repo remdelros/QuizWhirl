@@ -23,7 +23,7 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
   fileUpload({
-    limits: { fileSize: 50 * 1024 * 1024 }, // 50MB limit
+    limits: { fileSize: 50 * 1024 * 1024 }, 
     abortOnLimit: true,
   })
 );
