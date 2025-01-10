@@ -1,4 +1,4 @@
-require("dotenv").config();
+// require("dotenv").config();
 
 const express = require("express");
 const cors = require("cors");
@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
   origin: "*",
-  credentials: 'false',
+  credentials: "false",
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
@@ -23,14 +23,15 @@ app.use(cors(corsOptions));
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
   fileUpload({
-    limits: { fileSize: 50 * 1024 * 1024 }, 
+    limits: { fileSize: 50 * 1024 * 1024 },
     abortOnLimit: true,
   })
 );
 
 // OpenAI Configuration
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey:
+    "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",
 });
 
 // PDF Storage Directory
