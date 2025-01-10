@@ -13,20 +13,12 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
-  credentials: true,
-  origin: ["http://localhost:3000", "http://localhost:8081"],
+  origin: "*",
+  credentials: 'false',
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
-
 app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  next();
-});
-
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
@@ -35,23 +27,6 @@ app.use(
     abortOnLimit: true,
   })
 );
-
-// Logging middleware
-app.use((req, res, next) => {
-  console.log(`Received ${req.method} request to ${req.path}`);
-  next();
-});
-
-app.use((req, res, next) => {
-  res.header("Access-Control-Allow-Origin", req.headers.origin || "*");
-  res.header("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-  res.header(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization, X-Requested-With"
-  );
-  res.header("Access-Control-Allow-Credentials", "true");
-  next();
-});
 
 // OpenAI Configuration
 const openai = new OpenAI({
