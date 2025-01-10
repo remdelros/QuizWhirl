@@ -12,14 +12,18 @@ const fileUpload = require("express-fileupload");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-const corsOptions = {
-  credentials: true,
-  origin: ["http://localhost:3000", "http://localhost:8081"],
-  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-};
+// const corsOptions = {
+//   credentials: true,
+//   origin: ["http://localhost:3000", "http://localhost:8081"],
+//   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+// };
 
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: "http://localhost:8081",
+  })
+);
 app.options("*", cors(corsOptions));
 
 app.use(bodyParser.json({ limit: "50mb" }));
