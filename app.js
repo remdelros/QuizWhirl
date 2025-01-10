@@ -125,7 +125,7 @@ app.post("/api/parse-pdf-text", async (req, res) => {
     `,
         },
       ],
-      max_tokens: 10000,
+      max_tokens: 4000,
     });
 
     let jsonResponse = completion.choices[0].message.content;
