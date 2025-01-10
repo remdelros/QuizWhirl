@@ -61,7 +61,7 @@ app.post("/api/parse-pdf-text", async (req, res) => {
     console.log("First 500 characters of text:", data.text.substring(0, 2000));
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-4o",
+      model: "gpt-3.5-turbo",
       temperature: 0.3,
       messages: [
         {
