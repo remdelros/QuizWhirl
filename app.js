@@ -10,8 +10,13 @@ const fileUpload = require("express-fileupload");
 const app = express();
 const PORT = process.env.PORT || 3000;
 
-app.use(cors());
-app.options('*', cors())
+const corsOptions = {
+  credentials: true,
+  origin: ["*"], 
+};
+
+app.use(cors(corsOptions));
+app.options("*", cors());
 
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(
