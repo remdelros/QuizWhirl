@@ -30,8 +30,7 @@ app.use(
 
 // OpenAI Configuration
 const openai = new OpenAI({
-  apiKey:
-    "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",
+  apiKey: process.env.OPENAI_API_KEY,
 });
 
 // PDF Storage Directory
@@ -62,7 +61,7 @@ app.post("/api/parse-pdf-text", async (req, res) => {
     console.log("First 500 characters of text:", data.text.substring(0, 2000));
 
     const completion = await openai.chat.completions.create({
-      model: "gpt-3.5-turbo",
+      model: "gpt-4o",
       temperature: 0.3,
       messages: [
         {
