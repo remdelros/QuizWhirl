@@ -46,7 +46,12 @@ const ensureUploadDir = async () => {
 };
 ensureUploadDir();
 
+app.timeout = 240000;
+
 app.post("/api/parse-pdf-text", async (req, res) => {
+
+  req.setTimeout(240000);
+
   try {
     const { file, filename } = req.body;
 
@@ -154,9 +159,10 @@ app.post("/api/parse-pdf-text", async (req, res) => {
   }
 });
 
-// Start Server
-app.listen(PORT, () => {
-  console.log(`Server running at port {PORT}`);
+const server = app.listen(PORT, () => {
+  console.log(`Server running at port ${PORT}`);
+  server.keepAliveTimeout = 65000;
+  server.headersTimeout = 66000; 
 });
 
 module.exports = app;
