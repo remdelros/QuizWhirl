@@ -30,7 +30,8 @@ app.use(
 
 // OpenAI Configuration
 const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
+  apiKey:
+    "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",
 });
 
 // PDF Storage Directory
