@@ -163,6 +163,10 @@ app.get("/api/hello-world", (req, res) => {
   res.json({ message: "hello world" });
 });
 
+app.post("/api/test-post", (req, res) => {
+  res.json({ message: "POST endpoint working" });
+});
+
 const server = app.listen(PORT, () => {
   console.log(`Server running at port ${PORT}`);
   server.keepAliveTimeout = 65000;
