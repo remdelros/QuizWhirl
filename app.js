@@ -158,3 +158,5 @@ app.post("/api/parse-pdf-text", async (req, res) => {
 app.listen(PORT, () => {
   console.log(`Server running at port {PORT}`);
 });
+
+module.exports = app;
