@@ -14,7 +14,7 @@ const PORT = process.env.PORT || 3000;
 
 const corsOptions = {
   origin: "*",
-  credentials: "false",
+  credentials: false,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   allowedHeaders: ["Content-Type", "Authorization"],
 };
@@ -31,7 +31,7 @@ app.use(
 // OpenAI Configuration
 const openai = new OpenAI({
   apiKey:
-    "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",
+    "sk-svcacct-GLKyyDWGNcdhT-lX1Hy-0QFIk1Qck76z3IY_LVQ_RecpXCUIThI-y71HMMV-FrT3BlbkFJgzHd6pnqGaxKPk1HpF5km_yf7td5aP9Sa9c_UCCT-OgpxUEPj096BP2TV8AyMA",
 });
 
 // PDF Storage Directory
