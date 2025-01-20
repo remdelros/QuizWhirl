@@ -56,14 +56,26 @@ app.post("/api/parse-pdf-text", async (req, res) => {
     const { file, filename } = req.body;
 
     if (!file) {
-      return res.status(400).json({ error: "No PDF data provided" });
+      return res.status(400).json({ error: "No data provided" });
     }
 
-    const buffer = Buffer.from(file, "base64");
-    const data = await pdf(buffer);
+    let textContent;
 
-    console.log("PDF Text Length:", data.text.length);
-    console.log("First 500 characters of text:", data.text.substring(0, 2000));
+    // Check if it's coming from OCR (plain text) or PDF
+    try {
+      // Try to parse as PDF first
+      const buffer = Buffer.from(file, "base64");
+      const pdfData = await pdf(buffer);
+      textContent = pdfData.text;
+    } catch (error) {
+      // If PDF parsing fails, assume it's plain text from OCR
+      console.log("Not a PDF, treating as plain text from OCR");
+      const buffer = Buffer.from(file, "base64");
+      textContent = buffer.toString("utf-8");
+    }
+
+    console.log("Text Length:", textContent.length);
+    console.log("First 500 characters of text:", textContent.substring(0, 500));
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
