@@ -149,8 +149,7 @@ app.post("/api/parse-pdf-text", async (req, res) => {
           
           Using the following text as source material:
 
-        ${data.text}
-    
+        ${textContent.text}
     
     Each level should be:
     - **Level 1**: multiple-choice questions (each with 4 options).
