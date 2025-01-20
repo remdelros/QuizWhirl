@@ -61,21 +61,41 @@ app.post("/api/parse-pdf-text", async (req, res) => {
 
     let textContent;
 
-    // Check if it's coming from OCR (plain text) or PDF
+    // Add detailed logging
+    console.log("Received request:", {
+      filenameReceived: filename,
+      fileContentLength: file.length,
+      sampleContent: file.substring(0, 100),
+    });
+
     try {
       // Try to parse as PDF first
       const buffer = Buffer.from(file, "base64");
-      const pdfData = await pdf(buffer);
-      textContent = pdfData.text;
-    } catch (error) {
-      // If PDF parsing fails, assume it's plain text from OCR
-      console.log("Not a PDF, treating as plain text from OCR");
-      const buffer = Buffer.from(file, "base64");
-      textContent = buffer.toString("utf-8");
+      console.log("Successfully created buffer");
+
+      try {
+        const pdfData = await pdf(buffer);
+        textContent = pdfData.text;
+        console.log("Successfully parsed as PDF");
+      } catch (pdfError) {
+        console.log("Not a PDF, treating as plain text");
+        // If PDF parsing fails, treat as plain text
+        textContent = buffer.toString("utf-8");
+      }
+    } catch (bufferError) {
+      console.error("Buffer creation error:", bufferError);
+      return res.status(500).json({ error: "Invalid base64 content" });
     }
 
-    console.log("Text Length:", textContent.length);
-    console.log("First 500 characters of text:", textContent.substring(0, 500));
+    if (!textContent || textContent.trim().length === 0) {
+      console.error("No text content extracted");
+      return res
+        .status(400)
+        .json({ error: "No text content could be extracted" });
+    }
+
+    console.log("Extracted text sample:", textContent.substring(0, 100));
+    console.log("Text length:", textContent.length);
 
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
