@@ -145,7 +145,22 @@ app.post("/api/parse-pdf-text", async (req, res) => {
     Each level should be:
     - **Level 1**: multiple-choice questions (each with 4 options).
     - **Level 2**: fill-in-the-blank questions.
-    - **Level 3**: Guess questions (the letters is the jumbled "word". make sure that letters is not equal to word since letters should be jumbled.)
+    - **Level 3**: Create "What" questions where:
+        1. Each question starts with "What" and presents a clear scenario or concept
+        2. The answer must be stored in two fields:
+           - "letters": contains a jumbled arrangement of the answer letters
+           - "word": contains the correct answer
+        3. The "letters" field MUST:
+           - Use exactly the same letters as the "word" field
+           - Be arranged in a different order than the "word"
+           - Include all letters from the answer, no more and no less
+        
+        Example format in JSON:
+        {
+          "question": "What happens when a solid mixes into a liquid?",
+          "letters": "VDLSSIE",  // Jumbled version
+          "word": "DISSOLVE"     // Correct answer (contains same exact letters)
+        }
     - **Level 4**: identification questions(put quotations on the id).
 
     It is imperative that there should be ten questions per level.
