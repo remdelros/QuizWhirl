@@ -50,97 +50,143 @@ ensureUploadDir();
 app.timeout = 240000;
 
 app.post("/api/parse-pdf-text", async (req, res) => {
-  req.setTimeout(240000); // Set timeout to handle large requests
+  req.setTimeout(240000);
 
   try {
-    const { file } = req.body;
+    const { file, filename } = req.body;
 
     if (!file) {
-      return res.status(400).json({ error: "No file data provided" });
+      return res.status(400).json({ error: "No PDF data provided" });
     }
+    const isPDF = file.startsWith("JVBERi0");
 
-    console.log("Received file data.");
+    let textContent;
+    if (isPDF) {
+      try {
+        const buffer = Buffer.from(file, "base64");
+        const data = await pdf(buffer);
+        textContent = data.text;
+      } catch (error) {
+        console.error("PDF parsing error:", error);
+        return res.status(400).json({ error: "Failed to parse the PDF." });
+      }
+    } else {
+      // If not a PDF, decode the base64 content to text
+      try {
+        const buffer = Buffer.from(file, "base64");
+        textContent = buffer.toString("utf-8");
 
-    const buffer = Buffer.from(file, "base64");
-
-    let data;
-    try {
-      data = await pdf(buffer);
-    } catch (error) {
-      console.error("PDF parsing failed:", error.message);
-      return res.status(400).json({ error: "Failed to parse the PDF." });
+        console.log("=== Decoded Text Content ===");
+        console.log("First 500 characters:", textContent.substring(0, 500));
+      } catch (error) {
+        console.error("Text decoding error:", error);
+        return res
+          .status(400)
+          .json({ error: "Failed to decode text content." });
+      }
     }
-
-    const textContent = data.text;
 
     if (!textContent || textContent.trim().length === 0) {
-      console.error("No text content extracted.");
-      return res
-        .status(400)
-        .json({ error: "No text content could be extracted from the PDF." });
+      return res.status(400).json({ error: "No text content found" });
     }
 
-    console.log("Extracted text sample:", textContent.substring(0, 100));
+    console.log("Text Content Length:", textContent.length);
+    console.log("First 500 characters of text:", textContent.substring(0, 500));
 
-    // Generate quiz questions using OpenAI API
     const completion = await openai.chat.completions.create({
       model: "gpt-3.5-turbo",
       temperature: 0.3,
       messages: [
         {
           role: "system",
-          content: `You are a professional quiz question generator. Generate questions based on the provided text content, ensuring questions test understanding of key concepts and important details. Generate a valid JSON object strictly in this format: 
-          {
-            "level1": [
-              { "question": "string", 
-                "options": ["string", "string", "string", "string"], 
-                "answer": "string" }
-            ],
-            "level2": [
-              { "question": "string", 
-                "answer": "string" }
-            ],
-            "level3": [
-              { "question": "string", 
-                "letters": "string", 
-                 "word": "string" }
-            ],
-            "level4": [
-              { "id": "number", 
-                "question": "string", 
-                "answer": "string" }
-            ]
-          }
+          content: `You are a professional quiz question generator. You will generate specific questions based ONLY on the provided text content. Do not generate generic questions or questions from outside the provided text.
+          Each question must be directly related to the concepts and information presented in the input text.
+
+    Generate questions in this JSON format:
+    
+    {
+      "level1": [
+        {
+          "question": "string",
+          "options": ["string", "string", "string", "string"],
+          "answer": "string"
+        }
+      ],
+      "level2": [
+        {
+          "question": "string",
+          "answer": "string"
+        }
+      ],
+      "level3": [
+        {
+          "question": "string",
+          "letters": "string",  
+          "word": "string"
+        }
+      ],
+      "level4": [
+        {
+          "id": "number"
+          "question": "string",
+          "answer": "string"
+        }
+      ]
+    }
           `,
         },
         {
           role: "user",
           content: `
-          Using the following text as source material:
-          ${textContent}
-          Each level should have 10 questions, testing different formats as specified.
-          `,
+          
+        Generate questions STRICTLY based on this text content ONLY. Do not include any questions about topics not mentioned in this text:\n\n${textContent}\n\nGenerate questions according to these rules:
+    
+    
+    Each level should be:
+    - **Level 1**: multiple-choice questions (each with 4 options).
+    - **Level 2**: fill-in-the-blank questions.
+    - **Level 3**: Guess questions (the letters is the jumbled "word". make sure that letters is not equal to word since letters should be jumbled.)
+    - **Level 4**: identification questions(put quotations on the id).
+
+    It is imperative that there should be ten questions per level.
+    `,
         },
       ],
       max_tokens: 4000,
     });
 
-    let jsonResponse = completion.choices[0].message.content.trim();
+    console.log("\n=== Raw OpenAI Response ===");
+    console.log(completion.choices[0].message.content);
 
+    let jsonResponse = completion.choices[0].message.content;
+    jsonResponse = jsonResponse
+      .replace(/json|/g, "")
+      .replace(/^\s+|\s+$/g, "")
+      .replace(/\,(?=\s*?[\}\]])/g, "");
+
+    console.log("\n=== Cleaned JSON Response ===");
+    console.log(jsonResponse);
+
+    let quizQuestions;
     try {
-      const quizQuestions = JSON.parse(jsonResponse);
-      res.json({ message: "Quiz generated successfully.", quizQuestions });
+      quizQuestions = JSON.parse(jsonResponse);
+      console.log("\n=== Parsed Quiz Questions ===");
+      console.log(JSON.stringify(quizQuestions, null, 2));
+
+      console.log("\n=== Final Response to Frontend ===");
+      console.log(JSON.stringify({ quizQuestions }, null, 2));
+      res.json({ quizQuestions });
     } catch (error) {
-      console.error("Invalid JSON response:", jsonResponse);
+      console.error("Invalid JSON Response:", jsonResponse);
       res.status(500).json({
-        error: "Failed to parse JSON response from OpenAI.",
+        error: "Failed to parse JSON",
         details: error.message,
       });
     }
   } catch (error) {
-    console.error("Error during file processing:", error);
+    console.error("Error generating questions:", error);
     res.status(500).json({
-      error: "An error occurred while processing the file.",
+      error: "An error occurred while generating quiz questions.",
       details: error.message,
     });
   }
